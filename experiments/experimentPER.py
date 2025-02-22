@@ -7,6 +7,22 @@ load_dotenv()
 
 YOUR_API_KEY = os.getenv("PERPLEXITY_KEY")
 
+conversation_context = '''Conversation Summary:
+The conversation involves a health triage interaction between an AI assistant, 
+Doctor Triago, and a user named Roberto. The AI collects basic information from Roberto, 
+who is 90 years old and complains of a very high fever with no other symptoms. 
+Doctor Triago informs Roberto that Doctor Medika will follow up soon. 
+The conversation ends with Roberto thanking the AI and saying goodbye. 
+The AI assistant then initiates an end call procedure, 
+responding with a polite farewell message. 
+The interaction is brief, professional, and focused on gathering essential 
+health information for further medical follow-up.
+
+Collected Data:
+age: 90
+health complaints: very high fever
+name: Roberto'''
+
 
 
 messages = [
@@ -24,7 +40,7 @@ messages = [
     {   
         "role": "user",
         "content": (
-            '''Coordination issues, unsteadiness, brain fog, weakness in legs and arms (especially legs when walking), intermittent joint pains, pain in left heel, pain under left and right ribs, blurry vision (comes and goes independently), elevated resting heart rate (even while sleeping), fatigue (flu-like), pressure on sides of head when walking, flushing of cheeks, and itching on back.'''
+            conversation_context
         ),
     },
 ]
@@ -37,8 +53,8 @@ response = client.chat.completions.create(
     messages=messages,
 )
 
-content = response.choices[0].message.content
+level_1_context = response.choices[0].message.content
 
 
-print(content)
+print(level_1_context)
 
