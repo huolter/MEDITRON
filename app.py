@@ -6,6 +6,7 @@ import time
 from threading import Timer
 import requests
 from openai import OpenAI
+import fal_client
 
 from elevenlabs.client import ElevenLabs
 from elevenlabs.conversational_ai.conversation import Conversation
@@ -17,7 +18,10 @@ load_dotenv()
 
 elevenlabs_api_key = os.getenv("ELEVENLABS_KEY")
 perplexity_key = os.getenv("PERPLEXITY_KEY")
+fal_api_key = os.getenv("FAL_KEY")
+
 triago_agent_id = "ElVoXXU3GzWLADpFa4vL"
+
 WAIT_TIME_SECONDS = 10
 
 def get_research_context(conversation_data):
