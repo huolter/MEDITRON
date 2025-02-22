@@ -1,0 +1,31 @@
+=== MEDICAL CONSULTATION DOSSIER ===
+
+CONVERSATION SUMMARY:
+--------------------------------------------------
+The conversation is a brief health triage interaction between an AI assistant named Doctor Triago and a user named Roberto. Doctor Triago introduces itself and explains its role in collecting basic information before sharing it with Doctor Medika. Roberto agrees to provide information. The AI then asks for Roberto's name and age, which he provides (20 years old). The conversation ends with Doctor Triago asking Roberto to describe his health complaints, but Roberto's response is not included in the transcript.
+
+COLLECTED DATA:
+--------------------------------------------------
+age: 20
+health complaints: I am 20 years old.
+name: Roberto
+
+RESEARCH CONTEXT:
+--------------------------------------------------
+## Possible Causes
+Given the limited information, it's challenging to pinpoint specific causes without Roberto's health complaints. However, common health issues in a 20-year-old might include:
+
+- **Infections** (e.g., respiratory or gastrointestinal)
+- **Injuries** (e.g., sports-related)
+- **Mental health concerns** (e.g., anxiety, depression)
+- **Chronic conditions** (e.g., asthma, diabetes)
+
+## Follow-up Questions
+1. **Can you describe your symptoms in detail?** (e.g., pain, fever, difficulty breathing)
+2. **How long have you been experiencing these symptoms?**
+3. **Have you recently traveled or been exposed to anyone with similar symptoms?**
+4. **Do you have any pre-existing medical conditions or allergies?**
+5. **Have you taken any medications recently?**
+
+--------------------------------------------------
+Generated on: 2025-02-22 18:05:00

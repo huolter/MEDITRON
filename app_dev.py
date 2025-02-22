@@ -6,6 +6,7 @@ import time
 from threading import Timer
 import requests
 from openai import OpenAI
+import fal_client
 
 from elevenlabs.client import ElevenLabs
 from elevenlabs.conversational_ai.conversation import Conversation
@@ -17,8 +18,12 @@ load_dotenv()
 
 elevenlabs_api_key = os.getenv("ELEVENLABS_KEY")
 perplexity_key = os.getenv("PERPLEXITY_KEY")
+fal_api_key = os.getenv("FAL_KEY")
+
 triago_agent_id = "ElVoXXU3GzWLADpFa4vL"
-WAIT_TIME_SECONDS = 10
+
+WAIT_TIME_SECONDS = 10 # waiting time for data processing post convo
+INACTIVITY_TIMEOUT = 30  # Timeout after 30 seconds of inactivity
 
 def get_research_context(conversation_data):
     """Generate research context using the Perplexity AI"""
@@ -86,6 +91,11 @@ def get_conversation_data(conversation_id):
         print(f"Error retrieving conversation data: {e}")
         return None
 
+
+def end_conversation_automatically(conversation):
+    print("Ending conversation automatically due to timeout.")
+    conversation.end_session()
+
 def check_end_conversation(transcript, conversation):
     # List of phrases that will end the conversation
     end_phrases = ["goodbye", "end call", "bye", "exit", "stop", "end conversation"]
@@ -93,6 +103,10 @@ def check_end_conversation(transcript, conversation):
         print("Ending conversation based on voice command.")
         conversation.end_session()
         return True
+    
+    # Reset the inactivity timer upon user input to prevent premature timeout
+    inactivity_timer = Timer(INACTIVITY_TIMEOUT, lambda: end_conversation_automatically(conversation))
+    inactivity_timer.start()
     return False
 
 def talk_to_dr_triago():
@@ -113,18 +127,60 @@ def talk_to_dr_triago():
     # Start the conversation session
     conversation.start_session()
 
-    # Function to end the session after a timeout
-    def end_conversation():
-        print("Ending conversation automatically due to timeout.")
-        conversation.end_session()
-
     # Handle signal interrupts to end the session gracefully
     signal.signal(signal.SIGINT, lambda sig, frame: conversation.end_session())
 
+    # Initiate inactivity timer
+    inactivity_timer = Timer(INACTIVITY_TIMEOUT, lambda: end_conversation_automatically(conversation))
+    inactivity_timer.start()
+
     # Wait for the session to end and get the conversation ID
     conversation_id = conversation.wait_for_session_end()
+    inactivity_timer.cancel()  # Cancel inactivity timer on session end
     print(f"Conversation ID: {conversation_id}")
     return conversation_id
+
+
+def save_to_dossier(conversation_data, research_context, filename="dossier.txt"):
+    """Save conversation data, collected data, and research context to a file"""
+    try:
+        # Remove existing dossier if it exists
+        if os.path.exists(filename):
+            os.remove(filename)
+            print(f"Removed existing {filename}")
+
+        # Create new dossier
+        with open(filename, 'w', encoding='utf-8') as file:
+            # Write conversation summary
+            file.write("=== MEDICAL CONSULTATION DOSSIER ===\n\n")
+            file.write("CONVERSATION SUMMARY:\n")
+            file.write("-" * 50 + "\n")
+            file.write(conversation_data['summary'])
+            file.write("\n\n")
+
+            # Write collected data
+            file.write("COLLECTED DATA:\n")
+            file.write("-" * 50 + "\n")
+            for key, value in conversation_data['collected_data'].items():
+                file.write(f"{key}: {value}\n")
+            file.write("\n")
+
+            # Write research context
+            file.write("RESEARCH CONTEXT:\n")
+            file.write("-" * 50 + "\n")
+            file.write(research_context)
+            file.write("\n\n")
+
+            # Write timestamp
+            file.write("-" * 50 + "\n")
+            file.write(f"Generated on: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+
+        print(f"\nNew dossier created successfully: {filename}")
+        return True
+    except Exception as e:
+        print(f"Error saving dossier: {e}")
+        return False
+
 
 def main():
     print("Talking to Dr Triago...")
@@ -154,6 +210,9 @@ def main():
         if level_1_context:
             print("\nResearch Context:")
             print(level_1_context)
+            
+            # Save all information to dossier
+            save_to_dossier(conversation_data, level_1_context)
         else:
             print("Failed to generate research context")
     
