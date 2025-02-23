@@ -3,7 +3,7 @@ for Feb 22 2025 11L a16z hackathon
 
 Miro Board with architecture https://miro.com/app/board/uXjVIbQtG58=/?share_link_id=562796366164 
 
-```markdown
+
 # ⚕️ MEDITRON: AI-Powered Medical Consultation System
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
