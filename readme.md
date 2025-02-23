@@ -27,6 +27,14 @@ The system operates in the following stages:
 
 The entire process is documented in a "dossier" (`dossier.txt`), which is updated throughout the process, providing a complete record of the consultation.  The final assessment and individual model responses are also saved separately.
 
+## Full run video [click for youtube]:
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=3KRXogo3EK4">
+    <img src="https://img.youtube.com/vi/3KRXogo3EK4/0.jpg" alt="YouTube Video Title" width="560">
+  </a>
+</p>
+
 ## Generated Assets
 
 *   **dossier.txt:**  Progressive information gathered at the initial stages with the basic context, plus enriched with the web research and Dr Medika's 2nd interview insights.  
