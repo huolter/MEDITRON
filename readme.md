@@ -123,4 +123,5 @@ python generate_final_audio.py
 * **Model Choice Justification:** The choices of GPT-4o, Claude 3.5 Sonnet, and Gemini Pro 1.5 reflect a balance between cost-effectiveness, performance, and availability on the Fal.ai platform. GPT-4o is used for the final assessment due to its strong reasoning capabilities.
 * **Asynchronous vs. Synchronous:** While the Fal.ai calls *could* be made purely synchronous, using `asyncio.to_thread` allows for a smoother integration into the overall `asyncio` event loop, preventing blocking of the main thread. The main script itself is structured to be asynchronous.
 *   **This system is for informational and research purposes only and should not be considered a substitute for professional medical advice.** Always consult with a qualified healthcare provider for any health concerns or before making any decisions related to your health or treatment.
+*   **Eleven Labs Agents require configuration at the server** You can read the details at /agents_config folder
 
