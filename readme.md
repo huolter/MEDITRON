@@ -1,11 +1,10 @@
 # ⚕️ MEDITRON: AI-Powered Medical Consultation System
-for Feb 22 2025 11L a16z hackathon
+For Feb.22.2025 ElevanLabs + a16z hackathon https://hackathon.elevenlabs.io/
 
 <div align="center">
   <img src="images/3.png" alt="Descriptive text for the image" width="500"/>
 </div>
 
-Miro Board with architecture https://miro.com/app/board/uXjVIbQtG58=/?share_link_id=562796366164 
 
 ## Overview
 
@@ -14,6 +13,8 @@ MEDITRON is a sophisticated, multi-stage AI system designed to assist in medical
 <div align="center">
   <img src="images/diagram.png" alt="Descriptive text for the image" width="500"/>
 </div>
+
+[Miro Board with architecture https://miro.com/app/board/uXjVIbQtG58=/?share_link_id=562796366164] 
 
 The system operates in the following stages:
 
