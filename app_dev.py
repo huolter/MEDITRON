@@ -1,25 +1,26 @@
+# main.py
 import os
 import signal
 import sys
 import time
-
+import asyncio
 import requests
+
 from dotenv import load_dotenv
 from openai import OpenAI
+
+from research import get_medical_advice  # Import the research function
 
 from elevenlabs.client import ElevenLabs
 from elevenlabs.conversational_ai.conversation import Conversation, ConversationConfig
 from elevenlabs.conversational_ai.default_audio_interface import DefaultAudioInterface
-
 
 # Load environment variables
 load_dotenv()
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_KEY")
 PERPLEXITY_KEY = os.getenv("PERPLEXITY_KEY")
-
 WAIT_TIME_SECONDS = 10
-
 TRIAGO_AGENT_ID = "ElVoXXU3GzWLADpFa4vL"
 MEDIKA0_ID = "m494ytPpnrp2NkYRa0sF"
 
@@ -81,6 +82,13 @@ def save_medika_to_dossier(medika_conversation_data, filename="dossier.txt"):
 
     append_to_dossier(content, filename)
 
+def save_expert_recommendations(recommendations, filename="dossier.txt"):
+    """Save expert recommendations to the dossier."""
+    content = "EXPERT RECOMMENDATIONS:\n"
+    content += "-" * 50 + "\n"
+    content += recommendations + "\n\n"
+    append_to_dossier(content, filename)
+
 
 def read_dossier_simple(filename="dossier.txt"):
     """Read the dossier file."""
@@ -94,9 +102,9 @@ def read_dossier_simple(filename="dossier.txt"):
 
 def get_research_context(conversation_data):
     """Generate research context using Perplexity AI."""
-    conversation_context = f"""Conversation Summary: 
+    conversation_context = f"""Conversation Summary:
 {conversation_data['summary']}
--
+
 Collected Data:
 """
     for key, value in conversation_data['collected_data'].items():
@@ -170,7 +178,7 @@ def get_conversation_data(conversation_id):
 
 def check_end_conversation(transcript, conversation):
     """Check if the conversation should end based on user transcript."""
-    end_phrases = ["goodbye", "end call", "end conversation"]
+    end_phrases = ["goodbye", "end call", "bye", "exit", "stop", "end conversation"]
     if any(phrase in transcript.lower() for phrase in end_phrases):
         print("Ending conversation based on voice command.")
         conversation.end_session()
@@ -280,7 +288,7 @@ def talk_to_dr_medika():
         return None
 
 
-def main():
+async def main():
     """Main function to orchestrate the conversations and data processing."""
     initialize_dossier() # Initialize the dossier at the start
 
@@ -345,10 +353,18 @@ def main():
 
     save_medika_to_dossier(medika_conversation_data)
 
-
-
-    print("Dossier updated successfully.")
-
+    # --- New Expert Research Step ---
+    print("\nPerforming expert research and assessment...")
+    dossier_content = read_dossier_simple()
+    if dossier_content:
+        final_advice = await get_medical_advice("dossier.txt")
+        if final_advice:
+            save_expert_recommendations(final_advice)
+            print("Expert recommendations saved to dossier.")
+        else:
+            print("Failed to get expert recommendations.")
+    else:
+        print("Failed to read dossier content for expert research.")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
