@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 from research import get_medical_advice  # Import the research function
+from generate_final_audio import from_advice_doc_to_audio_script
 
 from elevenlabs.client import ElevenLabs
 from elevenlabs.conversational_ai.conversation import Conversation, ConversationConfig
@@ -365,6 +366,10 @@ async def main():
             print("Failed to get expert recommendations.")
     else:
         print("Failed to read dossier content for expert research.")
+
+    print ("generating final audio mesage...")
+    from_advice_doc_to_audio_script()
+    print ("bye!")
 
 if __name__ == "__main__":
     asyncio.run(main())
