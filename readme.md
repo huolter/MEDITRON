@@ -1,9 +1,14 @@
 # ⚕️ MEDITRON: AI-Powered Medical Consultation System
 For Feb.22.2025 ElevanLabs + a16z hackathon https://hackathon.elevenlabs.io/
 
-<div align="center">
-  <img src="images/3.png" alt="Descriptive text for the image" width="500"/>
-</div>
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=CmdD-cdgGdo">
+    <img src="https://img.youtube.com/vi/CmdD-cdgGdo/0.jpg" alt="YouTube Video Title" width="560">
+  </a>
+</p>
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=CmdD-cdgGdo">Click to see the intro video</a>
+</p>
 
 
 ## Overview
