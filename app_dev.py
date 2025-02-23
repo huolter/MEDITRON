@@ -2,17 +2,21 @@ import os
 import signal
 import sys
 import time
+
 import requests
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from elevenlabs.client import ElevenLabs
-from elevenlabs.conversational_ai.conversation import Conversation
+from elevenlabs import (
+    ConversationalConfig,
+    PromptAgentToolsItem_System,
+    AgentConfig,
+    PromptAgent
+)
 from elevenlabs.client import ElevenLabs
 from elevenlabs.conversational_ai.conversation import Conversation, ConversationConfig
 from elevenlabs.conversational_ai.default_audio_interface import DefaultAudioInterface
-from elevenlabs.conversational_ai.default_audio_interface import DefaultAudioInterface
-from elevenlabs import ConversationalConfig, PromptAgentToolsItem_System, AgentConfig, PromptAgent
+
 
 # Load environment variables
 load_dotenv()
@@ -24,7 +28,7 @@ TRIAGO_AGENT_ID = "ElVoXXU3GzWLADpFa4vL"
 MEDIKA0_ID = "m494ytPpnrp2NkYRa0sF"
 
 
-def save_to_dossier(conversation_data, research_context, filename="dossier.txt"):
+def save_to_dossier(conversation_data, research_context, medika_conversation_data=None, filename="dossier.txt"):
     """Save conversation and research data to a file."""
     try:
         if os.path.exists(filename):
@@ -33,12 +37,12 @@ def save_to_dossier(conversation_data, research_context, filename="dossier.txt")
 
         with open(filename, 'w', encoding='utf-8') as file:
             file.write("=== MEDICAL CONSULTATION DOSSIER ===\n\n")
-            file.write("CONVERSATION SUMMARY:\n")
+            file.write("TRIAGE CONVERSATION SUMMARY:\n")
             file.write("-" * 50 + "\n")
             file.write(conversation_data['summary'])
             file.write("\n\n")
 
-            file.write("COLLECTED DATA:\n")
+            file.write("TRIAGE COLLECTED DATA:\n")
             file.write("-" * 50 + "\n")
             for key, value in conversation_data['collected_data'].items():
                 file.write(f"{key}: {value}\n")
@@ -48,6 +52,18 @@ def save_to_dossier(conversation_data, research_context, filename="dossier.txt")
             file.write("-" * 50 + "\n")
             file.write(research_context)
             file.write("\n\n")
+
+            if medika_conversation_data:
+                file.write("MEDIKA CONVERSATION SUMMARY:\n")
+                file.write("-" * 50 + "\n")
+                file.write(medika_conversation_data['summary'])
+                file.write("\n\n")
+
+                file.write("MEDIKA COLLECTED DATA:\n")
+                file.write("-" * 50 + "\n")
+                for key, value in medika_conversation_data['collected_data'].items():
+                    file.write(f"{key}: {value}\n")
+                file.write("\n")
 
             file.write("-" * 50 + "\n")
             file.write(f"Generated on: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
@@ -98,7 +114,7 @@ Collected Data:
 
     try:
         response = client.chat.completions.create(
-            model="sonar",
+            model="sonar-pro",
             messages=messages,
         )
         return response.choices[0].message.content
@@ -270,31 +286,31 @@ def main():
     print("\n")
 
     print("Getting context and info from call...")
-    conversation_data = get_conversation_data(triago_conversation_id)
+    triago_conversation_data = get_conversation_data(triago_conversation_id)
 
-    if not conversation_data:
+    if not triago_conversation_data:
         print("Failed to get conversation data. Creating minimal dossier...")
-        conversation_data = {
+        triago_conversation_data = {
             'summary': f"Conversation ID: {triago_conversation_id}. Failed to retrieve detailed summary.",
             'collected_data': {'error': 'Data retrieval failed'}
         }
         level_1_context = "Unable to generate research context due to data retrieval failure."
     else:
         print("\nConversation Summary:")
-        print(conversation_data['summary'])
+        print(triago_conversation_data['summary'])
 
         print("\nCollected Data:")
-        for key, value in conversation_data['collected_data'].items():
+        for key, value in triago_conversation_data['collected_data'].items():
             print(f"{key}: {value}")
 
         print("\nGenerating research context...")
-        level_1_context = get_research_context(conversation_data)
+        level_1_context = get_research_context(triago_conversation_data)
 
         if not level_1_context:
             level_1_context = "Failed to generate research context."
             print("Failed to generate research context")
 
-    save_success = save_to_dossier(conversation_data, level_1_context)
+    save_success = save_to_dossier(triago_conversation_data, level_1_context)
     if not save_success:
         print("Error: Failed to save dossier. Cannot continue.")
         return
@@ -304,6 +320,31 @@ def main():
     print("Starting call with Dr Medika...")
     medika_conversation_id = talk_to_dr_medika()
     print(f"Finished consultation with Dr Medika. Conversation ID: {medika_conversation_id}")
+
+    print(f"\nWaiting {WAIT_TIME_SECONDS} seconds for Medika data processing...")
+    for i in range(WAIT_TIME_SECONDS, 0, -1):
+        sys.stdout.write(f"\rTime remaining: {i} seconds...")
+        sys.stdout.flush()
+        time.sleep(1)
+    print("\n")
+
+    medika_conversation_data = get_conversation_data(medika_conversation_id)
+    if not medika_conversation_data:
+        print("Failed to get conversation data from Medika. Saving dossier without Medika data...")
+        medika_conversation_data = {
+            'summary': f"Conversation ID: {medika_conversation_id}. Failed to retrieve detailed summary.",
+            'collected_data': {'error': 'Data retrieval failed'}
+        }
+        save_success = save_to_dossier(triago_conversation_data, level_1_context, medika_conversation_data)
+    else:
+        save_success = save_to_dossier(triago_conversation_data, level_1_context, medika_conversation_data)
+
+
+    if not save_success:
+        print("Error: Failed to save dossier with medika conversation. Stopping.")
+        return
+
+    print("Dossier updated successfully.")
 
 
 if __name__ == "__main__":
