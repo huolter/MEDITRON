@@ -8,7 +8,7 @@ For Feb.22.2025 ElevanLabs + a16z hackathon https://hackathon.elevenlabs.io/
 
 ## Overview
 
-MEDITRON is a sophisticated, multi-stage AI system designed to assist in medical consultations.  It simulates a patient interaction, performs in-depth medical research, and provides a comprehensive assessment for medical professionals.  The system leverages several cutting-edge AI models and APIs, including ElevenLabs (for conversational AI and text-to-speech), Perplexity AI (for initial research), and Fal.ai's Any-LLM (for a diverse range of medical perspectives).
+MEDITRON is a sophisticated, multi-stage AI system designed to assist in medical consultations.  It facilitates AI driven patient interaction, performs in-depth medical research, and provides a comprehensive assessment. The system leverages several cutting-edge AI models and APIs, including ElevenLabs (for conversational AI and text-to-speech), Perplexity AI (for initial research), and Fal.ai's Any-LLM (for a diverse range of medical perspectives).
 
 <div align="center">
   <img src="images/diagram.png" alt="Descriptive text for the image" width="500"/>
@@ -19,13 +19,20 @@ MEDITRON is a sophisticated, multi-stage AI system designed to assist in medical
 The system operates in the following stages:
 
 1.  **Triage (Dr. Triago):** An initial patient interaction using ElevenLabs' conversational AI to gather basic symptoms and medical history.
-2.  **Initial Research:** Uses Perplexity AI to generate a preliminary report on potential causes and follow-up questions based on the triage conversation.
+2.  **Initial Research:** Uses Perplexity AI to generate a preliminary report on potential causes and follow-up questions based on the triage conversation, leveraging web search.
 3.  **Detailed Consultation (Dr. Medika):**  A second, more in-depth conversation with ElevenLabs' conversational AI, incorporating the initial research and the triage information.  Dr. Medika asks detailed follow-up questions to gather a comprehensive understanding of the patient's condition.
-4.  **Expert Panel Research:**  Leverages Fal.ai's Any-LLM service to query multiple large language models (including GPT-4o, Claude 3.5 Sonnet, and Gemini Pro 1.5) from different medical perspectives (specialist, holistic, and risk assessment).
+4.  **Expert Panel Research:**  Leverages Fal.ai's Any-LLM service to query multiple large language models (including GPT-4o, Claude 3.5 Sonnet, and Gemini Pro 1.5) from different medical perspectives (specialist, holistic, and risk assessment). Currently this generates 3x3 = 9 assesments from different perspectives and from different LLMs for maximal variability.
 5.  **Final Assessment:**  Combines all gathered information and research results into a final, comprehensive assessment using GPT-4o.
 6. **Audio Message Generation**: Generates a final audio message with the medical conclusion, to be played by the patient.
 
 The entire process is documented in a "dossier" (`dossier.txt`), which is updated throughout the process, providing a complete record of the consultation.  The final assessment and individual model responses are also saved separately.
+
+## Generated Assets
+
+*   **dossier.txt:**  Progressive information gathered at the initial stages with the basic context, plus enriched with the web research and Dr Medika's 2nd interview insights.  
+*   **team_research.txt:**  Deep research executed by a swarm of 9 instances combining 3 visions with 3 LLMs to achieve variety of perspectives. Very large document.   
+*   **final_advice.txt:**  Consolidated final advice generated via reflection and summarization of the team research, and basis for the final communication to the patient. 
+
 
 ## Features
 
