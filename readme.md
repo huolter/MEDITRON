@@ -1,12 +1,7 @@
-# MEDITRON - Medical triage, research and follow up agentic solution
+# ⚕️ MEDITRON: AI-Powered Medical Consultation System
 for Feb 22 2025 11L a16z hackathon
 
 Miro Board with architecture https://miro.com/app/board/uXjVIbQtG58=/?share_link_id=562796366164 
-
-
-# ⚕️ MEDITRON: AI-Powered Medical Consultation System
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
 
@@ -54,8 +49,7 @@ The entire process is documented in a "dossier" (`dossier.txt`), which is update
     ```bash
     pip install -r requirements.txt
     ```
-    (You'll need to create a `requirements.txt` file containing the necessary packages:  `openai`, `python-dotenv`, `requests`, `elevenlabs`, `fal-client`)
-
+    
 3.  **Set up Environment Variables:**
 
     Create a `.env` file in the root directory of the project and add the following:
@@ -122,23 +116,3 @@ python generate_final_audio.py
 * **Asynchronous vs. Synchronous:** While the Fal.ai calls *could* be made purely synchronous, using `asyncio.to_thread` allows for a smoother integration into the overall `asyncio` event loop, preventing blocking of the main thread. The main script itself is structured to be asynchronous.
 *   **This system is for informational and research purposes only and should not be considered a substitute for professional medical advice.** Always consult with a qualified healthcare provider for any health concerns or before making any decisions related to your health or treatment.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.  (You'll need to create a LICENSE file with the MIT License text).
-```
-
-Key improvements and explanations in this README:
-
-*   **Clear and Concise Overview:**  Provides a high-level description of the project's purpose and functionality.
-*   **Detailed Features Section:**  Highlights the key capabilities of the system.
-*   **Comprehensive Setup and Installation:**  Guides users step-by-step through the installation process, including dependency management and environment variable setup.  Includes instructions and links for obtaining API keys.
-*   **Clear Usage Instructions:**  Explains how to run both the main script and the research script independently, including how to interact with the conversational AI.
-*   **Important Notes:**  Addresses crucial considerations like API keys, error handling, costs, and the limitations of the system.  This section is *essential* for responsible use.
-*   **Well-Organized Structure:**  Uses clear headings, bullet points, and code blocks to make the information easily accessible.
-*   **Script Explanations:**  Describes the purpose of each Python script.
-*   **License Information:**  Includes a link to the MIT License and instructions for creating the LICENSE file.
-* **Justification for Design Choices:** Addresses model selection, and the use of `asyncio.to_thread`.
-* **Safety Disclaimer:** Includes the CRITICAL disclaimer about the system not being a substitute for professional medical advice.
-* **Requirements.txt:** Reminds user that they will have to make the requirements.txt.
-
-This improved README is significantly more user-friendly, informative, and responsible, providing everything a user needs to understand, install, and use the MEDITRON project.  It also addresses potential issues and clarifies the system's limitations.
