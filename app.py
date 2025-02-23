@@ -7,12 +7,6 @@ import requests
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from elevenlabs import (
-    ConversationalConfig,
-    PromptAgentToolsItem_System,
-    AgentConfig,
-    PromptAgent
-)
 from elevenlabs.client import ElevenLabs
 from elevenlabs.conversational_ai.conversation import Conversation, ConversationConfig
 from elevenlabs.conversational_ai.default_audio_interface import DefaultAudioInterface
@@ -23,56 +17,69 @@ load_dotenv()
 
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_KEY")
 PERPLEXITY_KEY = os.getenv("PERPLEXITY_KEY")
+
 WAIT_TIME_SECONDS = 10
+
 TRIAGO_AGENT_ID = "ElVoXXU3GzWLADpFa4vL"
 MEDIKA0_ID = "m494ytPpnrp2NkYRa0sF"
 
 
-def save_to_dossier(conversation_data, research_context, medika_conversation_data=None, filename="dossier.txt"):
-    """Save conversation and research data to a file."""
+def append_to_dossier(content, filename="dossier.txt"):
+    """Append content to the dossier with a timestamp."""
     try:
-        if os.path.exists(filename):
-            os.remove(filename)
-            print(f"Removed existing {filename}")
+        with open(filename, 'a', encoding='utf-8') as file:
+            timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+            file.write(f"\n--- Updated: {timestamp} ---\n")
+            file.write(content + "\n")
+        print(f"Dossier updated at {timestamp}")
+    except Exception as e:
+        print(f"Error appending to dossier: {e}")
 
+def initialize_dossier(filename="dossier.txt"):
+    """Create (or overwrite) the dossier file with a header."""
+    try:
         with open(filename, 'w', encoding='utf-8') as file:
             file.write("=== MEDICAL CONSULTATION DOSSIER ===\n\n")
-            file.write("TRIAGE CONVERSATION SUMMARY:\n")
-            file.write("-" * 50 + "\n")
-            file.write(conversation_data['summary'])
-            file.write("\n\n")
-
-            file.write("TRIAGE COLLECTED DATA:\n")
-            file.write("-" * 50 + "\n")
-            for key, value in conversation_data['collected_data'].items():
-                file.write(f"{key}: {value}\n")
-            file.write("\n")
-
-            file.write("RESEARCH CONTEXT:\n")
-            file.write("-" * 50 + "\n")
-            file.write(research_context)
-            file.write("\n\n")
-
-            if medika_conversation_data:
-                file.write("MEDIKA CONVERSATION SUMMARY:\n")
-                file.write("-" * 50 + "\n")
-                file.write(medika_conversation_data['summary'])
-                file.write("\n\n")
-
-                file.write("MEDIKA COLLECTED DATA:\n")
-                file.write("-" * 50 + "\n")
-                for key, value in medika_conversation_data['collected_data'].items():
-                    file.write(f"{key}: {value}\n")
-                file.write("\n")
-
-            file.write("-" * 50 + "\n")
-            file.write(f"Generated on: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
-
-        print(f"\nNew dossier created successfully: {filename}")
-        return True
+        print(f"Dossier initialized.")
     except Exception as e:
-        print(f"Error saving dossier: {e}")
-        return False
+        print(f"Error initializing dossier: {e}")
+
+
+
+def save_triago_to_dossier(conversation_data, research_context, filename="dossier.txt"):
+    """Save Triago conversation and research data to the dossier."""
+
+    content = "TRIAGE CONVERSATION SUMMARY:\n"
+    content += "-" * 50 + "\n"
+    content += conversation_data['summary'] + "\n\n"
+
+    content += "TRIAGE COLLECTED DATA:\n"
+    content += "-" * 50 + "\n"
+    for key, value in conversation_data['collected_data'].items():
+        content += f"{key}: {value}\n"
+    content += "\n"
+
+    content += "RESEARCH CONTEXT:\n"
+    content += "-" * 50 + "\n"
+    content += research_context + "\n\n"
+
+    append_to_dossier(content, filename)
+
+
+def save_medika_to_dossier(medika_conversation_data, filename="dossier.txt"):
+    """Save Medika conversation data to the dossier."""
+
+    content = "MEDIKA CONVERSATION SUMMARY:\n"
+    content += "-" * 50 + "\n"
+    content += medika_conversation_data['summary'] + "\n\n"
+
+    content += "MEDIKA COLLECTED DATA:\n"
+    content += "-" * 50 + "\n"
+    for key, value in medika_conversation_data['collected_data'].items():
+        content += f"{key}: {value}\n"
+    content += "\n"
+
+    append_to_dossier(content, filename)
 
 
 def read_dossier_simple(filename="dossier.txt"):
@@ -87,9 +94,9 @@ def read_dossier_simple(filename="dossier.txt"):
 
 def get_research_context(conversation_data):
     """Generate research context using Perplexity AI."""
-    conversation_context = f"""Conversation Summary:
+    conversation_context = f"""Conversation Summary: 
 {conversation_data['summary']}
-
+-
 Collected Data:
 """
     for key, value in conversation_data['collected_data'].items():
@@ -163,7 +170,7 @@ def get_conversation_data(conversation_id):
 
 def check_end_conversation(transcript, conversation):
     """Check if the conversation should end based on user transcript."""
-    end_phrases = ["goodbye", "end call", "bye", "exit", "stop", "end conversation"]
+    end_phrases = ["goodbye", "end call", "end conversation"]
     if any(phrase in transcript.lower() for phrase in end_phrases):
         print("Ending conversation based on voice command.")
         conversation.end_session()
@@ -203,7 +210,7 @@ def talk_to_dr_medika():
             print("Error: Could not read dossier")
             return
 
-        system_prompt = (
+        medika_system_prompt = (
             "You are Doctor Medika, a medical professional conducting a comprehensive follow-up with a patient. "
             "The patient has already described their initial complaints to Doctor Triago, and your role is to perform a deep evaluation based on that information. "
             "\n\n### Your Objectives: "
@@ -226,13 +233,13 @@ def talk_to_dr_medika():
             f"\nContext and medical history for this patient:\n\n{dossier}"
             )
         print ("------------")
-        print (system_prompt)
+        print (medika_system_prompt)
         print ("------------")
 
         conversation_override = {
             "agent": {
                 "prompt": {
-                    "prompt": system_prompt
+                    "prompt": medika_system_prompt
                 }
             }
         }
@@ -275,6 +282,8 @@ def talk_to_dr_medika():
 
 def main():
     """Main function to orchestrate the conversations and data processing."""
+    initialize_dossier() # Initialize the dossier at the start
+
     print("Talking to Dr Triago...")
     triago_conversation_id = talk_to_dr_triago()
 
@@ -310,10 +319,8 @@ def main():
             level_1_context = "Failed to generate research context."
             print("Failed to generate research context")
 
-    save_success = save_to_dossier(triago_conversation_data, level_1_context)
-    if not save_success:
-        print("Error: Failed to save dossier. Cannot continue.")
-        return
+    save_triago_to_dossier(triago_conversation_data, level_1_context)
+
 
     print("\nPreparing context for Dr Medika...")
     print("Instantiating Dr Medika...")
@@ -335,14 +342,10 @@ def main():
             'summary': f"Conversation ID: {medika_conversation_id}. Failed to retrieve detailed summary.",
             'collected_data': {'error': 'Data retrieval failed'}
         }
-        save_success = save_to_dossier(triago_conversation_data, level_1_context, medika_conversation_data)
-    else:
-        save_success = save_to_dossier(triago_conversation_data, level_1_context, medika_conversation_data)
+
+    save_medika_to_dossier(medika_conversation_data)
 
 
-    if not save_success:
-        print("Error: Failed to save dossier with medika conversation. Stopping.")
-        return
 
     print("Dossier updated successfully.")
 
