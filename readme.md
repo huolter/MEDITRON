@@ -1,11 +1,19 @@
 # ⚕️ MEDITRON: AI-Powered Medical Consultation System
 for Feb 22 2025 11L a16z hackathon
 
+<div align="center">
+  <img src="images/3.png" alt="Descriptive text for the image" width="500"/>
+</div>
+
 Miro Board with architecture https://miro.com/app/board/uXjVIbQtG58=/?share_link_id=562796366164 
 
 ## Overview
 
 MEDITRON is a sophisticated, multi-stage AI system designed to assist in medical consultations.  It simulates a patient interaction, performs in-depth medical research, and provides a comprehensive assessment for medical professionals.  The system leverages several cutting-edge AI models and APIs, including ElevenLabs (for conversational AI and text-to-speech), Perplexity AI (for initial research), and Fal.ai's Any-LLM (for a diverse range of medical perspectives).
+
+<div align="center">
+  <img src="images/diagram.png" alt="Descriptive text for the image" width="500"/>
+</div>
 
 The system operates in the following stages:
 
